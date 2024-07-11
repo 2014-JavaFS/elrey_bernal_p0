@@ -3,17 +3,21 @@ package com.revature.bankingapp.Account;
 public class Account {
 
     private int accountId;
-    private int userId;
+    private int ownerId;
     private double balance;
-    private String accountType;
+    private AccountType type;
+
+    public enum AccountType{
+        CHECKING, SAVINGS
+    }
 
     public Account() {}
 
-    public Account(int accountId, int userId, double balance, String accountType) {
+    public Account(int accountId, int ownerId, double balance, AccountType type) {
         this.accountId = accountId;
-        this.userId = userId;
+        this.ownerId = ownerId;
         this.balance = balance;
-        this.accountType = accountType;
+        this.type = type;
     }
 
     public int getAccountId() {
@@ -24,12 +28,12 @@ public class Account {
         this.accountId = accountId;
     }
 
-    public int getUserId() {
-        return userId;
+    public int getOwnerId() {
+        return ownerId;
     }
 
-    public void setUserId(int userId) {
-        this.userId = userId;
+    public void setOwnerId(int ownerId) {
+        this.ownerId = ownerId;
     }
 
     public double getBalance() {
@@ -40,21 +44,21 @@ public class Account {
         this.balance = balance;
     }
 
-    public String getAccountType() {
-        return accountType;
+    public AccountType getAccountType() {
+        return type;
     }
 
-    public void setAccountType(String accountType) {
-        this.accountType = accountType;
+    public void setAccountType(AccountType type) {
+        this.type = type;
     }
 
     @Override
     public String toString() {
         return "Account{" +
                 "accountId=" + accountId +
-                ", userId=" + userId +
+                ", userId=" + ownerId +
                 ", balance=" + balance +
-                ", accountType='" + accountType + '\'' +
+                ", accountType='" + type + '\'' +
                 '}';
     }
 }

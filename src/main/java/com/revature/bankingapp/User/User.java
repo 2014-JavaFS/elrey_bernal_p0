@@ -3,17 +3,20 @@ package com.revature.bankingapp.User;
 public class User {
 
     private int userId;
-    private String username;
-    private String password;
+    private String firstName;
+    private String lastName;
     private String email;
+    private String password;
+
 
     public User() {}
 
-    public User(int userId, String username, String password, String email) {
+    public User(int userId, String firstName, String lastName, String email, String password) {
         this.userId = userId;
-        this.username = username;
-        this.password = password;
+        this.firstName = firstName;
+        this.lastName = lastName;
         this.email = email;
+        this.password = password;
     }
 
     public int getUserId() {
@@ -24,20 +27,20 @@ public class User {
         this.userId = userId;
     }
 
-    public String getUsername() {
-        return username;
+    public String getFirstName() {
+        return firstName;
     }
 
-    public void setUsername(String username) {
-        this.username = username;
+    public void setFirstName(String firstName) {
+        this.firstName = firstName;
     }
 
-    public String getPassword() {
-        return password;
+    public String getLastName() {
+        return lastName;
     }
 
-    public void setPassword(String password) {
-        this.password = password;
+    public void setLastName(String lastName) {
+        this.lastName = lastName;
     }
 
     public String getEmail() {
@@ -48,11 +51,20 @@ public class User {
         this.email = email;
     }
 
+    public String getPassword() {
+        return password;
+    }
+
+    public void setPassword(String password) {
+        this.password = password;
+    }
+
     @Override
     public String toString() {
         return "User{" +
                 "userId=" + userId +
-                ", username='" + username + '\'' +
+                ", firstName='" + firstName + '\'' +
+                ", lastName='" + lastName + '\'' +
                 ", email='" + email + '\'' +
                 '}';
     }
