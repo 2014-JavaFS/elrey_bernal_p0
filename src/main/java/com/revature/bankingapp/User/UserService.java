@@ -1,13 +1,16 @@
 package com.revature.bankingapp.User;
 
 import com.revature.bankingapp.util.exceptions.DataNotFoundException;
+import com.revature.bankingapp.util.exceptions.InvalidInputException;
 import com.revature.bankingapp.util.interfaces.Crudable;
 
 import java.util.ArrayList;
 import java.util.List;
+import java.util.function.Predicate;
 
 public class UserService implements Crudable<User>{
 
+    private Predicate<String> isNotEmpty = str -> str != null && !str.isBlank();
     private UserRepository userRepository;
 
     public UserService(UserRepository userRepository) {
@@ -42,6 +45,14 @@ public class UserService implements Crudable<User>{
     @Override
     public boolean delete(int number) {
         return false;
+    }
+
+    public void validateMinUser(User user) throws InvalidInputException {
+        if (user == null) {
+            throw new InvalidInputException("User is null as it has not been instantiated in memory");
+        }
+
+
     }
 
 }

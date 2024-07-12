@@ -4,6 +4,7 @@ import com.revature.bankingapp.util.ConnectionFactory;
 import com.revature.bankingapp.util.interfaces.Crudable;
 
 import java.sql.Connection;
+import java.sql.PreparedStatement;
 import java.sql.ResultSet;
 import java.sql.SQLException;
 import java.util.ArrayList;
@@ -30,8 +31,31 @@ public class UserRepository implements Crudable<User> {
     }
 
     @Override
-    public User create(User newObject) {
-        return null;
+    public User create(User newUser) {
+        try(Connection conn = ConnectionFactory.getConnectionFactory().getConnection()) {
+            List<User> users = new ArrayList<>();
+
+            String sql = "insert into users (user_id, first_name, last_name, email, password) values (?,?,?,?,?)";
+            PreparedStatement preparedStatement = conn.prepareStatement(sql);
+
+            preparedStatement.setInt(1, newUser.getUserId());
+            preparedStatement.setString(2, newUser.getFirstName());
+            preparedStatement.setString(3, newUser.getLastName());
+            preparedStatement.setString(4, newUser.getEmail());
+            preparedStatement.setString(5, newUser.getPassword());
+
+            int checkInsert = preparedStatement.executeUpdate();
+            System.out.println("Inserting information....");
+            if(checkInsert == 0) {
+                throw new RuntimeException("User was not inserted into the database");
+            }
+
+            return newUser;
+
+        } catch (SQLException e) {
+            e.printStackTrace();
+            return null;
+        }
     }
 
     @Override
