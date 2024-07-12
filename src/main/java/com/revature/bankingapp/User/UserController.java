@@ -56,7 +56,7 @@ public class UserController implements Controller {
         ctx.json(user);
     }
 
-    public void postNewUser(Context ctx){
+    public void postNewUser(Context ctx) throws InvalidInputException {
         User user = ctx.bodyAsClass(User.class); //request body & mapping from JSON to Java Object
 
         ctx.json(userService.create(user)); //Respond with the created flight;

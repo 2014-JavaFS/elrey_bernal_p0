@@ -126,6 +126,30 @@ public class UserRepository implements Crudable<User> {
         }
     }
 
+    /**
+     * Checks the database whether the email is already taken by a different user.
+        * @param email is a string argument containing the email information
+        * @return returns true if it is available, false if already taken.
+     */
+    public boolean checkEmailAvailability(String email) {
+        try(Connection conn = ConnectionFactory.getConnectionFactory().getConnection()) {
+            List<User> users = new ArrayList<>();
+
+            String sql = "select * from users where email = ?";
+            PreparedStatement preparedStatement = conn.prepareStatement(sql);
+
+            preparedStatement.setString(1, email);
+
+            ResultSet rs = preparedStatement.executeQuery();
+
+            return !rs.next();
+
+        } catch (SQLException e) {
+            e.printStackTrace();
+            return false;
+        }
+    }
+
     private User generateUserFromResultSet(ResultSet rs) throws SQLException {
         User user = new User();
 

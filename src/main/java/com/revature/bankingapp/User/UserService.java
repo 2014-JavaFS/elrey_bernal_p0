@@ -28,7 +28,8 @@ public class UserService implements Crudable<User>{
     }
 
     @Override
-    public User create(User newObject) {
+    public User create(User newUser) throws InvalidInputException {
+        validateUser(newUser);
         return null;
     }
 
@@ -47,10 +48,27 @@ public class UserService implements Crudable<User>{
         return false;
     }
 
-    public void validateMinUser(User user) throws InvalidInputException {
+    public void validateUser(User user) throws InvalidInputException {
         if (user == null) {
             throw new InvalidInputException("User is null as it has not been instantiated in memory");
         }
+
+        if (user.getUserId() <= 0) {
+            throw new InvalidInputException("User ID needs to be greater than 0.");
+        }
+
+        if(!isNotEmpty.test(user.getFirstName()) || !isNotEmpty.test(user.getLastName())) {
+            throw new InvalidInputException("Values are empty.");
+        }
+
+        if(!isNotEmpty.test(user.getEmail()) || !userRepository.checkEmailAvailability(user.getEmail())) {
+            throw new InvalidInputException("Email is empty or already taken");
+        }
+
+        if(!isNotEmpty.test(user.getPassword()) || user.getPassword().length() < 7) {
+            throw new InvalidInputException("Password is empty or less than 7 characters in length");
+        }
+
 
 
     }
