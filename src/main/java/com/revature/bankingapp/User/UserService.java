@@ -1,13 +1,16 @@
 package com.revature.bankingapp.User;
 
 import com.revature.bankingapp.util.exceptions.DataNotFoundException;
+import com.revature.bankingapp.util.exceptions.InvalidInputException;
 import com.revature.bankingapp.util.interfaces.Crudable;
 
 import java.util.ArrayList;
 import java.util.List;
+import java.util.function.Predicate;
 
 public class UserService implements Crudable<User>{
 
+    private Predicate<String> isNotEmpty = str -> str != null && !str.isBlank();
     private UserRepository userRepository;
 
     public UserService(UserRepository userRepository) {
@@ -25,23 +28,47 @@ public class UserService implements Crudable<User>{
     }
 
     @Override
-    public User create(User newObject) {
-        return null;
+    public User create(User newUser) throws InvalidInputException {
+        validateUser(newUser);
+        return userRepository.create(newUser);
     }
 
     @Override
     public User findById(int number) {
-        return null;
+        return userRepository.findById(number);
     }
 
     @Override
-    public boolean update(User updatedObject) {
-        return false;
+    public boolean update(User updatedObject) throws InvalidInputException{
+        validateUser(updatedObject);
+        return userRepository.update(updatedObject);
     }
 
     @Override
     public boolean delete(int number) {
-        return false;
+        return userRepository.delete(number);
+    }
+
+    public void validateUser(User user) throws InvalidInputException {
+        if (user == null) {
+            throw new InvalidInputException("User is null as it has not been instantiated in memory");
+        }
+
+        if (user.getUserId() <= 0) {
+            throw new InvalidInputException("User ID needs to be greater than 0.");
+        }
+
+        if(!isNotEmpty.test(user.getFirstName()) || !isNotEmpty.test(user.getLastName())) {
+            throw new InvalidInputException("Values are empty.");
+        }
+
+        if(!isNotEmpty.test(user.getEmail()) || !userRepository.checkEmailAvailability(user)) {
+            throw new InvalidInputException("Email is empty or already taken by another user.");
+        }
+
+        if(!isNotEmpty.test(user.getPassword()) || user.getPassword().length() < 7) {
+            throw new InvalidInputException("Password is empty or less than 7 characters in length");
+        }
     }
 
 }

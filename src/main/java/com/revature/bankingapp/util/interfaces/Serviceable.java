@@ -1,5 +1,6 @@
 package com.revature.bankingapp.util.interfaces;
 
+import com.revature.bankingapp.util.exceptions.InvalidInputException;
 import java.util.List;
 
 public interface Serviceable<O> {

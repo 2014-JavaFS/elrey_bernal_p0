@@ -34,6 +34,8 @@ insert into users (user_id, first_name, last_name, email, password) values
 	(42469, 'Ozzy', 'Peppard', 'opeppardi@fda.gov', 'yN1.IHWPMcz\GL'),
 	(34684, 'Yves', 'Carr', 'ycarrj@springer.com', 'lU5`65m+b(FI');
 
+truncate table users;
+
 create type account_enum as enum ('CHECKING', 'SAVINGS');
 
 create table accounts(
@@ -72,7 +74,7 @@ insert into transactions (transaction_id, account_id, transaction_time, transact
 select * from transactions;
 
 
-
+update users set first_name = 'Billie', last_name = 'Eilish' where user_id =  5654;
 select * from users;
 select * from accounts;
 

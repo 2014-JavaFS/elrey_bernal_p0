@@ -1,11 +1,10 @@
 package com.revature.bankingapp.User;
 
 import com.revature.bankingapp.util.ConnectionFactory;
+import com.revature.bankingapp.util.exceptions.DataNotFoundException;
 import com.revature.bankingapp.util.interfaces.Crudable;
 
-import java.sql.Connection;
-import java.sql.ResultSet;
-import java.sql.SQLException;
+import java.sql.*;
 import java.util.ArrayList;
 import java.util.List;
 
@@ -30,23 +29,131 @@ public class UserRepository implements Crudable<User> {
     }
 
     @Override
-    public User create(User newObject) {
-        return null;
+    public User create(User newUser) {
+        try(Connection conn = ConnectionFactory.getConnectionFactory().getConnection()) {
+            List<User> users = new ArrayList<>();
+
+            String sql = "insert into users (user_id, first_name, last_name, email, password) values (?,?,?,?,?)";
+            PreparedStatement preparedStatement = conn.prepareStatement(sql);
+
+            preparedStatement.setInt(1, newUser.getUserId());
+            preparedStatement.setString(2, newUser.getFirstName());
+            preparedStatement.setString(3, newUser.getLastName());
+            preparedStatement.setString(4, newUser.getEmail());
+            preparedStatement.setString(5, newUser.getPassword());
+
+            int checkInsert = preparedStatement.executeUpdate();
+            System.out.println("Inserting information....");
+            if(checkInsert == 0) {
+                throw new RuntimeException("User was not inserted into the database");
+            }
+
+            return newUser;
+
+        } catch (SQLException e) {
+            e.printStackTrace();
+            return null;
+        }
     }
 
     @Override
     public User findById(int number) {
-        return null;
+        try(Connection conn = ConnectionFactory.getConnectionFactory().getConnection()) {
+            List<User> users = new ArrayList<>();
+
+            String sql = "select * from users where user_id = ?";
+            PreparedStatement preparedStatement = conn.prepareStatement(sql);
+
+            preparedStatement.setInt(1, number);
+
+            ResultSet rs = preparedStatement.executeQuery();
+
+            if(!rs.next()) {
+                throw new DataNotFoundException("No user with that id " + number + " exists in our database.");
+            }
+
+            return generateUserFromResultSet(rs);
+
+        } catch (SQLException e) {
+            e.printStackTrace();
+            return null;
+        }
     }
 
     @Override
-    public boolean update(User updatedObject) {
-        return false;
+    public boolean update(User updatedUser) {
+        try(Connection conn = ConnectionFactory.getConnectionFactory().getConnection()) {
+            String sql = "update users set first_name = ?, last_name = ?,  email = ?, password = ? where user_id = ?";
+            PreparedStatement preparedStatement = conn.prepareStatement(sql);
+
+            preparedStatement.setString(1, updatedUser.getFirstName());
+            preparedStatement.setString(2, updatedUser.getLastName());
+            preparedStatement.setString(3, updatedUser.getEmail());
+            preparedStatement.setString(4, updatedUser.getPassword());
+
+            preparedStatement.setInt(5, updatedUser.getUserId());
+
+            int checkUpdate = preparedStatement.executeUpdate();
+            System.out.println("Updating information....");
+            if (checkUpdate == 0) {
+                throw new RuntimeException("User record was not updated");
+            }
+
+            return true;
+
+        } catch (SQLException e) {
+            e.printStackTrace();
+            return false;
+        }
     }
 
     @Override
     public boolean delete(int number) {
-        return false;
+        try(Connection conn = ConnectionFactory.getConnectionFactory().getConnection()) {
+            String sql = "delete from users where user_id = ?";
+            PreparedStatement preparedStatement = conn.prepareStatement(sql);
+
+            preparedStatement.setInt(1, number);
+            boolean checkDelete = preparedStatement.executeUpdate() == 1;
+            if(checkDelete){
+                System.out.println("User information was deleted.");
+            } else{
+                System.out.println("User information was deleted.");
+            }
+            return checkDelete;
+
+        } catch(SQLException e){
+            e.printStackTrace();
+            return false;
+        }
+    }
+
+    /**
+     * Checks the database whether the email is already taken by a different user.
+        * @param user is a User object containing the user information
+        * @return returns true if it is available, false if already taken.
+     */
+    public boolean checkEmailAvailability(User user) {
+        try(Connection conn = ConnectionFactory.getConnectionFactory().getConnection()) {
+            List<User> users = new ArrayList<>();
+
+            String sql = "select * from users where email = ?";
+            PreparedStatement preparedStatement = conn.prepareStatement(sql);
+
+            preparedStatement.setString(1, user.getEmail());
+
+            ResultSet rs = preparedStatement.executeQuery();
+            if(!rs.next()) { // if email is not used
+                return !rs.next();
+            }
+            else {
+                User retrievedUser = generateUserFromResultSet(rs);
+                return retrievedUser.getUserId() == user.getUserId(); //makes sure only one user is using an email
+            }
+        } catch (SQLException e) {
+            e.printStackTrace();
+            return false;
+        }
     }
 
     private User generateUserFromResultSet(ResultSet rs) throws SQLException {
