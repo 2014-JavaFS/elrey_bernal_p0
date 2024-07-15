@@ -5,7 +5,7 @@ public class Account {
     private int accountId;
     private int ownerId;
     private double balance;
-    private AccountType type;
+    private AccountType accountType;
 
     public enum AccountType{
         CHECKING, SAVINGS
@@ -13,11 +13,11 @@ public class Account {
 
     public Account() {}
 
-    public Account(int accountId, int ownerId, double balance, AccountType type) {
+    public Account(int accountId, int ownerId, double balance, AccountType accountType) {
         this.accountId = accountId;
         this.ownerId = ownerId;
         this.balance = balance;
-        this.type = type;
+        this.accountType = accountType;
     }
 
     public int getAccountId() {
@@ -45,11 +45,11 @@ public class Account {
     }
 
     public AccountType getAccountType() {
-        return type;
+        return accountType;
     }
 
     public void setAccountType(AccountType type) {
-        this.type = type;
+        this.accountType = type;
     }
 
     @Override
@@ -58,7 +58,7 @@ public class Account {
                 "accountId=" + accountId +
                 ", userId=" + ownerId +
                 ", balance=" + balance +
-                ", accountType='" + type + '\'' +
+                ", accountType='" + accountType + '\'' +
                 '}';
     }
 }

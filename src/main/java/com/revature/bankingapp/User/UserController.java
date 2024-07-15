@@ -48,8 +48,8 @@ public class UserController implements Controller {
     }
 
     public void getAllUsers(Context ctx) {
-        List<User> user = userService.findAll();
-        ctx.json(user);
+        List<User> users = userService.findAll();
+        ctx.json(users);
     }
 
     public void postNewUser(Context ctx) throws InvalidInputException {

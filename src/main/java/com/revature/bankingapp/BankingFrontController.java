@@ -1,5 +1,8 @@
 package com.revature.bankingapp;
 
+import com.revature.bankingapp.Account.AccountController;
+import com.revature.bankingapp.Account.AccountRepository;
+import com.revature.bankingapp.Account.AccountService;
 import com.revature.bankingapp.User.UserController;
 import com.revature.bankingapp.User.UserRepository;
 import com.revature.bankingapp.User.UserService;
@@ -19,6 +22,11 @@ public class BankingFrontController {
         UserService userService = new UserService(userRepository);
         UserController userController = new UserController(userService);
         userController.registerPaths(app);
+
+        AccountRepository accountRepository = new AccountRepository();
+        AccountService accountService = new AccountService(accountRepository);
+        AccountController accountController = new AccountController(accountService);
+        accountController.registerPaths(app);
 
         app.start(8080);
 

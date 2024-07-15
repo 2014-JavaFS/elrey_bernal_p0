@@ -19,7 +19,7 @@ public class UserRepository implements Crudable<User> {
 
             while(rs.next()){
 
-                users.add((generateUserFromResultSet(rs)));
+                users.add(generateUserFromResultSet(rs));
             }
             return users;
         } catch (SQLException e) {
