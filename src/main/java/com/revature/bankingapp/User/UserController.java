@@ -1,6 +1,5 @@
 package com.revature.bankingapp.User;
 
-import com.revature.bankingapp.util.ScannerValidator;
 import com.revature.bankingapp.util.exceptions.InvalidInputException;
 import com.revature.bankingapp.util.interfaces.Controller;
 import io.javalin.Javalin;
@@ -8,11 +7,7 @@ import io.javalin.Javalin;
 import io.javalin.http.Context;
 import io.javalin.http.HttpStatus;
 
-import java.time.LocalDateTime;
-import java.time.format.DateTimeFormatter;
-import java.time.format.DateTimeParseException;
 import java.util.List;
-import java.util.Scanner;
 import java.util.function.Predicate;
 
 public class UserController implements Controller {
@@ -46,8 +41,9 @@ public class UserController implements Controller {
     public void registerPaths(Javalin app) {
         app.get("/users", this::getAllUsers);
         app.post("/users", this::postNewUser);
-        app.get("/users/{userId}", this::getFlightById); //Path Parameter
+        app.get("/users/{userId}", this::getUserById); //Path Parameter
         app.put("/users", this::putUpdateUser);
+        app.delete("/users", this::deleteUser);
 
     }
 
@@ -63,7 +59,7 @@ public class UserController implements Controller {
         ctx.status(HttpStatus.CREATED); //Responded with a successful status code
     }
 
-    private void getFlightById(Context ctx) {
+    private void getUserById(Context ctx) {
         int userId = Integer.parseInt(ctx.pathParam("userId"));
         User foundUser = userService.findById(userId);
 
@@ -75,6 +71,13 @@ public class UserController implements Controller {
 
 
         ctx.json(userService.update(updatedUser));
+        ctx.status(HttpStatus.ACCEPTED);
+    }
+
+    private void deleteUser(Context ctx) {
+        User deletedUser = ctx.bodyAsClass(User.class);
+
+        ctx.json(userService.delete(deletedUser.getUserId()));
         ctx.status(HttpStatus.ACCEPTED);
     }
 

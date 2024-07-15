@@ -12,6 +12,7 @@ public class BankingFrontController {
 
         System.out.println("Banking System is up and running.....");
 
+
         Javalin app = Javalin.create();
 
         UserRepository userRepository = new UserRepository();
@@ -19,6 +20,7 @@ public class BankingFrontController {
         UserController userController = new UserController(userService);
         userController.registerPaths(app);
 
-        app.start(7070);
+        app.start(8080);
+
     }
 }

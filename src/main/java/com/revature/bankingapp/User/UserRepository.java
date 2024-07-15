@@ -91,6 +91,8 @@ public class UserRepository implements Crudable<User> {
             preparedStatement.setString(3, updatedUser.getEmail());
             preparedStatement.setString(4, updatedUser.getPassword());
 
+            preparedStatement.setInt(5, updatedUser.getUserId());
+
             int checkUpdate = preparedStatement.executeUpdate();
             System.out.println("Updating information....");
             if (checkUpdate == 0) {
@@ -128,22 +130,26 @@ public class UserRepository implements Crudable<User> {
 
     /**
      * Checks the database whether the email is already taken by a different user.
-        * @param email is a string argument containing the email information
+        * @param user is a User object containing the user information
         * @return returns true if it is available, false if already taken.
      */
-    public boolean checkEmailAvailability(String email) {
+    public boolean checkEmailAvailability(User user) {
         try(Connection conn = ConnectionFactory.getConnectionFactory().getConnection()) {
             List<User> users = new ArrayList<>();
 
             String sql = "select * from users where email = ?";
             PreparedStatement preparedStatement = conn.prepareStatement(sql);
 
-            preparedStatement.setString(1, email);
+            preparedStatement.setString(1, user.getEmail());
 
             ResultSet rs = preparedStatement.executeQuery();
-
-            return !rs.next();
-
+            if(!rs.next()) { // if email is not used
+                return !rs.next();
+            }
+            else {
+                User retrievedUser = generateUserFromResultSet(rs);
+                return retrievedUser.getUserId() == user.getUserId(); //makes sure only one user is using an email
+            }
         } catch (SQLException e) {
             e.printStackTrace();
             return false;

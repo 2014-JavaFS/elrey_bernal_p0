@@ -30,22 +30,23 @@ public class UserService implements Crudable<User>{
     @Override
     public User create(User newUser) throws InvalidInputException {
         validateUser(newUser);
-        return null;
+        return userRepository.create(newUser);
     }
 
     @Override
     public User findById(int number) {
-        return null;
+        return userRepository.findById(number);
     }
 
     @Override
-    public boolean update(User updatedObject) {
-        return false;
+    public boolean update(User updatedObject) throws InvalidInputException{
+        validateUser(updatedObject);
+        return userRepository.update(updatedObject);
     }
 
     @Override
     public boolean delete(int number) {
-        return false;
+        return userRepository.delete(number);
     }
 
     public void validateUser(User user) throws InvalidInputException {
@@ -61,16 +62,13 @@ public class UserService implements Crudable<User>{
             throw new InvalidInputException("Values are empty.");
         }
 
-        if(!isNotEmpty.test(user.getEmail()) || !userRepository.checkEmailAvailability(user.getEmail())) {
-            throw new InvalidInputException("Email is empty or already taken");
+        if(!isNotEmpty.test(user.getEmail()) || !userRepository.checkEmailAvailability(user)) {
+            throw new InvalidInputException("Email is empty or already taken by another user.");
         }
 
         if(!isNotEmpty.test(user.getPassword()) || user.getPassword().length() < 7) {
             throw new InvalidInputException("Password is empty or less than 7 characters in length");
         }
-
-
-
     }
 
 }
