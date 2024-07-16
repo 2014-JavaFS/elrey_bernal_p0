@@ -4,7 +4,7 @@ public class Account {
 
     private int accountId;
     private int ownerId;
-    private double balance;
+    private double balance = 0.0;
     private AccountType accountType;
 
     public enum AccountType{

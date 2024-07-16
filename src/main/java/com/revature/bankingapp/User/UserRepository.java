@@ -31,7 +31,6 @@ public class UserRepository implements Crudable<User> {
     @Override
     public User create(User newUser) {
         try(Connection conn = ConnectionFactory.getConnectionFactory().getConnection()) {
-            List<User> users = new ArrayList<>();
 
             String sql = "insert into users (user_id, first_name, last_name, email, password) values (?,?,?,?,?)";
             PreparedStatement preparedStatement = conn.prepareStatement(sql);
@@ -75,6 +74,35 @@ public class UserRepository implements Crudable<User> {
             return generateUserFromResultSet(rs);
 
         } catch (SQLException e) {
+            e.printStackTrace();
+            return null;
+        }
+    }
+
+    public User findByEmailAndPassword(String email, String password) {
+        try(Connection conn = ConnectionFactory.getConnectionFactory().getConnection()){
+            String sql = "select * from users where email = ? and password = ?";
+            PreparedStatement preparedStatement = conn.prepareStatement(sql);
+
+            preparedStatement.setString(1, email);
+            preparedStatement.setString(2, password);
+
+            ResultSet resultSet = preparedStatement.executeQuery();
+
+            if(!resultSet.next()){
+                throw new DataNotFoundException("No user with that info found");
+            }
+
+            User user = new User();
+
+            user.setUserId(resultSet.getInt("user_id"));
+            user.setFirstName(resultSet.getString("first_name"));
+            user.setLastName(resultSet.getString("last_name"));
+            user.setEmail(resultSet.getString("email"));
+
+            return user;
+
+        } catch (SQLException e){
             e.printStackTrace();
             return null;
         }

@@ -49,6 +49,9 @@ public class UserService implements Crudable<User>{
         return userRepository.delete(number);
     }
 
+    public User findByEmailAndPassword(String email, String password) {
+        return userRepository.findByEmailAndPassword(email, password);
+    }
     public void validateUser(User user) throws InvalidInputException {
         if (user == null) {
             throw new InvalidInputException("User is null as it has not been instantiated in memory");

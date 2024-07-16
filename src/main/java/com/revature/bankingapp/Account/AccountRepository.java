@@ -3,9 +3,7 @@ package com.revature.bankingapp.Account;
 import com.revature.bankingapp.util.ConnectionFactory;
 import com.revature.bankingapp.util.interfaces.Crudable;
 
-import java.sql.Connection;
-import java.sql.ResultSet;
-import java.sql.SQLException;
+import java.sql.*;
 import java.util.ArrayList;
 import java.util.List;
 
@@ -30,8 +28,29 @@ public class AccountRepository implements Crudable<Account> {
     }
 
     @Override
-    public Account create(Account newObject) {
-        return null;
+    public Account create(Account newAccount) {
+        try(Connection conn = ConnectionFactory.getConnectionFactory().getConnection()) {
+
+            String sql = "insert into accounts (account_id, owner_id, balance, account_type) values (?,?,?,?)";
+            PreparedStatement preparedStatement = conn.prepareStatement(sql);
+
+            preparedStatement.setInt(1, newAccount.getAccountId());
+            preparedStatement.setInt(2, newAccount.getOwnerId());
+            preparedStatement.setDouble(3, newAccount.getBalance());
+            preparedStatement.setString(4, newAccount.getAccountType().toString());
+
+            int checkInsert = preparedStatement.executeUpdate();
+            System.out.println("Inserting information....");
+            if(checkInsert == 0) {
+                throw new RuntimeException("User was not inserted into the database");
+            }
+
+            return newAccount;
+        } catch (SQLException e) {
+            e.printStackTrace();
+            return null;
+        }
+
     }
 
     @Override
