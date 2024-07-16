@@ -22,8 +22,9 @@ public class AccountService implements Crudable<Account> {
     }
 
     @Override
-    public Account create(Account newObject) {
-        return null;
+    public Account create(Account newAccount) {
+        validateAccount(newAccount);
+        return accountRepository.create(newAccount);
     }
 
     @Override
