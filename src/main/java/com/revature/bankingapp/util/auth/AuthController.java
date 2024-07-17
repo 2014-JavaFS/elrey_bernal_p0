@@ -33,4 +33,6 @@ public class AuthController implements Controller {
             ctx.status(HttpStatus.UNAUTHORIZED);
         }
     }
+
+
 }

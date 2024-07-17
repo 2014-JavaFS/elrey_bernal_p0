@@ -43,6 +43,35 @@ public class AccountService implements Crudable<Account> {
         return accountRepository.delete(number);
     }
 
+    public Account deposit(Account account, double amount) throws InvalidInputException{
+        if(amount < 0) throw new InvalidInputException("Deposit amount cannot be negative.");
+        else {
+            double updatedAmount = amount + account.getBalance();
+            account.setBalance(updatedAmount);
+        }
+
+        if(accountRepository.update(account))
+        {
+            return account;
+        } else {
+            return null;
+        }
+    }
+
+    public Account withdraw(Account account, double amount) throws InvalidInputException {
+        if(amount < 0) throw new InvalidInputException("Withdraw amount cannot be negative.");
+        else {
+            double updatedAmount = account.getBalance() - amount;
+            account.setBalance(updatedAmount);
+        }
+        if(accountRepository.update(account))
+        {
+            return account;
+        } else {
+            return null;
+        }
+    }
+
     private void validateAccount(Account account) throws InvalidInputException {
         if(account == null) {
             throw new InvalidInputException("Account is null as it has not been instantiated in memory");

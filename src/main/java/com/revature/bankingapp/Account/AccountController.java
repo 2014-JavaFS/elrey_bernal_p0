@@ -1,5 +1,6 @@
 package com.revature.bankingapp.Account;
 
+import com.revature.bankingapp.User.User;
 import com.revature.bankingapp.util.interfaces.Controller;
 import io.javalin.Javalin;
 import io.javalin.http.Context;
@@ -32,7 +33,7 @@ public class AccountController implements Controller {
     }
 
     private void postNewAccount(Context ctx) throws NullPointerException{
-        int userId = Integer.parseInt(Objects.requireNonNull(ctx.header("userId")));
+        int userId = loggedInCheck(ctx);
         System.out.println(userId);
         Account newAccount = ctx.bodyAsClass(Account.class);
         newAccount.setOwnerId(userId);
@@ -58,16 +59,59 @@ public class AccountController implements Controller {
     }
 
     private void putUpdateAccount(Context ctx) {
+        int userId = loggedInCheck(ctx);
+        if(userId == -1) return;
+        if(!ownerCheck(ctx, userId)) return;
+
         Account updatedAccount = ctx.bodyAsClass(Account.class);
+        updatedAccount.setOwnerId(userId);
+
+        if(userId != updatedAccount.getOwnerId()) {
+            ctx.status(HttpStatus.UNAUTHORIZED);
+            ctx.result("You are unauthorized to access this account");
+        }
+
 
         ctx.json(accountService.update(updatedAccount));
         ctx.status(HttpStatus.ACCEPTED);
     }
 
     private void deleteAccount(Context ctx) {
-        Account deletedAccount = ctx.bodyAsClass(Account.class);
+        int userId = loggedInCheck(ctx);
+        if(userId == -1) return;
+        if(!ownerCheck(ctx, userId)) return;
 
+        Account deletedAccount = ctx.bodyAsClass(Account.class);
+        deletedAccount.setOwnerId(userId);
+        if(userId != deletedAccount.getOwnerId()) {
+            ctx.status(HttpStatus.UNAUTHORIZED);
+            ctx.result("You are unauthorized to access this account.");
+            return;
+        }
         ctx.json(accountService.delete(deletedAccount.getAccountId()));
         ctx.status(HttpStatus.ACCEPTED);
     }
+
+    private int loggedInCheck(Context ctx) {
+        String headerUserId = ctx.header("userId");
+        if(headerUserId == null) {
+            ctx.status(400);
+            ctx.result("You are not logged in.");
+            return -1;
+        }
+        return Integer.parseInt(headerUserId);
+    }
+
+    private boolean ownerCheck(Context ctx, int userId) {
+        Account account = ctx.bodyAsClass(Account.class);
+        Account retrievedAccount = accountService.findById(account.getAccountId());
+        if(retrievedAccount.getOwnerId() != userId) {
+            ctx.status(400);
+            ctx.result("You are not the owner of account with account ID: " + retrievedAccount.getAccountId());
+            return false;
+        } else {
+            return true;
+        }
+    }
+
 }

@@ -1,5 +1,7 @@
 package com.revature.bankingapp.util.auth;
 
+import com.revature.bankingapp.Account.Account;
+import com.revature.bankingapp.Account.AccountService;
 import com.revature.bankingapp.User.User;
 import com.revature.bankingapp.User.UserService;
 
