@@ -29,17 +29,18 @@ public class AccountService implements Crudable<Account> {
 
     @Override
     public Account findById(int number) {
-        return null;
+        return accountRepository.findById(number);
     }
 
     @Override
-    public boolean update(Account updatedObject) {
-        return false;
+    public boolean update(Account updatedAccount) {
+        validateAccount(updatedAccount);
+        return accountRepository.update(updatedAccount);
     }
 
     @Override
     public boolean delete(int number) {
-        return false;
+        return accountRepository.delete(number);
     }
 
     private void validateAccount(Account account) throws InvalidInputException {

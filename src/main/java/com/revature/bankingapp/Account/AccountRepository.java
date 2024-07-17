@@ -1,6 +1,7 @@
 package com.revature.bankingapp.Account;
 
 import com.revature.bankingapp.util.ConnectionFactory;
+import com.revature.bankingapp.util.exceptions.DataNotFoundException;
 import com.revature.bankingapp.util.interfaces.Crudable;
 
 import java.sql.*;
@@ -55,17 +56,68 @@ public class AccountRepository implements Crudable<Account> {
 
     @Override
     public Account findById(int number) {
-        return null;
+        try(Connection conn = ConnectionFactory.getConnectionFactory().getConnection()) {
+
+            String sql = "select * from accounts where account_id = ?";
+            PreparedStatement preparedStatement = conn.prepareStatement(sql);
+
+            preparedStatement.setInt(1, number);
+
+            ResultSet rs = preparedStatement.executeQuery();
+
+            if(!rs.next()) {
+                throw new DataNotFoundException("No account with that id " + number + " exists in our database");
+            }
+
+            return generateAccountFromResultSet(rs);
+        } catch (SQLException e) {
+            e.printStackTrace();
+            return null;
+        }
     }
 
     @Override
-    public boolean update(Account updatedObject) {
-        return false;
+    public boolean update(Account updatedAccount) {
+        try(Connection conn = ConnectionFactory.getConnectionFactory().getConnection()) {
+            String sql = "update accounts set owner_id = ?, balance = ? where account_id = ?";
+            PreparedStatement preparedStatement = conn.prepareStatement(sql);
+
+            preparedStatement.setInt(1, updatedAccount.getOwnerId());
+            preparedStatement.setDouble(2, updatedAccount.getBalance());
+            preparedStatement.setInt(3, updatedAccount.getAccountId());
+
+            int checkUpdate = preparedStatement.executeUpdate();
+            System.out.println("Updating information....");
+            if(checkUpdate == 0) {
+                throw new RuntimeException("User record was not updated");
+            }
+            return true;
+        } catch (SQLException e) {
+            e.printStackTrace();
+            return false;
+        }
+
     }
 
     @Override
     public boolean delete(int number) {
-        return false;
+        try(Connection conn = ConnectionFactory.getConnectionFactory().getConnection()) {
+            String sql = "delete from accounts where account_id = ?";
+            PreparedStatement preparedStatement = conn.prepareStatement(sql);
+
+            preparedStatement.setInt(1, number);
+            boolean checkDelete = preparedStatement.executeUpdate() == 1;
+
+            if(checkDelete) {
+                System.out.println("Account information was deleted.");
+            } else {
+                System.out.println("Account information was deleted.");
+            }
+            return true;
+        } catch (SQLException e) {
+            e.printStackTrace();
+            return false;
+        }
     }
 
     private Account generateAccountFromResultSet(ResultSet rs) throws SQLException {

@@ -58,7 +58,6 @@ public class UserRepository implements Crudable<User> {
     @Override
     public User findById(int number) {
         try(Connection conn = ConnectionFactory.getConnectionFactory().getConnection()) {
-            List<User> users = new ArrayList<>();
 
             String sql = "select * from users where user_id = ?";
             PreparedStatement preparedStatement = conn.prepareStatement(sql);
