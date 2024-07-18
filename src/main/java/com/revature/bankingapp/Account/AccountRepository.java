@@ -5,6 +5,7 @@ import com.revature.bankingapp.util.exceptions.DataNotFoundException;
 import com.revature.bankingapp.util.interfaces.Crudable;
 
 import java.sql.*;
+import java.text.DecimalFormat;
 import java.util.ArrayList;
 import java.util.List;
 
@@ -78,6 +79,7 @@ public class AccountRepository implements Crudable<Account> {
 
     @Override
     public boolean update(Account updatedAccount) {
+        updatedAccount.setBalance(balanceFormat(updatedAccount.getBalance()));
         try(Connection conn = ConnectionFactory.getConnectionFactory().getConnection()) {
             String sql = "update accounts set owner_id = ?, balance = ? where account_id = ?";
             PreparedStatement preparedStatement = conn.prepareStatement(sql);
@@ -120,6 +122,26 @@ public class AccountRepository implements Crudable<Account> {
         }
     }
 
+    public List<Account> findAllByOwnerId(int ownerId) {
+        try(Connection conn = ConnectionFactory.getConnectionFactory().getConnection()) {
+            List<Account> accounts = new ArrayList<>();
+
+            String sql = "select * from accounts where owner_id = ?";
+            PreparedStatement preparedStatement = conn.prepareStatement(sql);
+
+            preparedStatement.setInt(1, ownerId);
+            ResultSet rs = preparedStatement.executeQuery();
+
+            while(rs.next()) {
+                accounts.add(generateAccountFromResultSet(rs));
+            }
+            return accounts;
+        } catch (SQLException e) {
+            e.printStackTrace();
+            return null;
+        }
+    }
+
     private Account generateAccountFromResultSet(ResultSet rs) throws SQLException {
         Account account = new Account();
 
@@ -129,5 +151,10 @@ public class AccountRepository implements Crudable<Account> {
         account.setAccountType(Account.AccountType.valueOf(rs.getString("account_type")));
 
         return account;
+    }
+
+    private double balanceFormat(double balance) {
+        DecimalFormat df = new DecimalFormat("#.00");
+        return Double.parseDouble(df.format(balance));
     }
 }

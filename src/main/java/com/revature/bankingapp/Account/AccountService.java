@@ -43,6 +43,15 @@ public class AccountService implements Crudable<Account> {
         return accountRepository.delete(number);
     }
 
+    public List<Account> findAllByOwnerId(int ownerId) {
+        List<Account> accounts = accountRepository.findAllByOwnerId(ownerId);
+        if(accounts.isEmpty()) {
+            throw new DataNotFoundException("No account information available");
+        } else {
+            return accounts;
+        }
+    }
+
     public Account deposit(Account account, double amount) throws InvalidInputException{
         if(amount < 0) throw new InvalidInputException("Deposit amount cannot be negative.");
         else {
@@ -59,11 +68,15 @@ public class AccountService implements Crudable<Account> {
     }
 
     public Account withdraw(Account account, double amount) throws InvalidInputException {
-        if(amount < 0) throw new InvalidInputException("Withdraw amount cannot be negative.");
-        else {
+        if(amount < 0) {
+            throw new InvalidInputException("Withdraw amount cannot be negative.");
+        } else if (account.getBalance() < amount) {
+            throw new InvalidInputException("Balance: " + account.getBalance() + " cannot be less than amount: " + amount);
+        } else {
             double updatedAmount = account.getBalance() - amount;
             account.setBalance(updatedAmount);
         }
+
         if(accountRepository.update(account))
         {
             return account;

@@ -46,6 +46,7 @@ create table accounts(
 	constraint fk_owner
 		foreign key(owner_id)
 		references users(user_id)
+		on delete cascade
 );
 
 insert into accounts (account_id, owner_id, balance, account_type) values
@@ -80,3 +81,4 @@ select * from accounts;
 
 
 
+delete from users where user_id = 7437;
