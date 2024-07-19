@@ -41,11 +41,6 @@ public class AccountController implements Controller {
         Account newAccount = ctx.bodyAsClass(Account.class);
         newAccount.setOwnerId(userId);
 
-        /*if(userId != newAccount.getAccountId()) {
-            ctx.status(HttpStatus.UNAUTHORIZED);
-            ctx.result("You do not have permission to perform this action.");
-            return;
-        }*/
 
         try{
             ctx.json(accountService.create(newAccount));

@@ -32,14 +32,14 @@ public class UserRepository implements Crudable<User> {
     public User create(User newUser) {
         try(Connection conn = ConnectionFactory.getConnectionFactory().getConnection()) {
 
-            String sql = "insert into users (user_id, first_name, last_name, email, password) values (?,?,?,?,?)";
-            PreparedStatement preparedStatement = conn.prepareStatement(sql);
+            String sql = "insert into users (first_name, last_name, email, password) values (?,?,?,?)";
+            PreparedStatement preparedStatement = conn.prepareStatement(sql, Statement.RETURN_GENERATED_KEYS);
 
-            preparedStatement.setInt(1, newUser.getUserId());
-            preparedStatement.setString(2, newUser.getFirstName());
-            preparedStatement.setString(3, newUser.getLastName());
-            preparedStatement.setString(4, newUser.getEmail());
-            preparedStatement.setString(5, newUser.getPassword());
+
+            preparedStatement.setString(1, newUser.getFirstName());
+            preparedStatement.setString(2, newUser.getLastName());
+            preparedStatement.setString(3, newUser.getEmail());
+            preparedStatement.setString(4, newUser.getPassword());
 
             int checkInsert = preparedStatement.executeUpdate();
             System.out.println("Inserting information....");
@@ -47,7 +47,9 @@ public class UserRepository implements Crudable<User> {
                 throw new RuntimeException("User was not inserted into the database");
             }
 
-            return newUser;
+            ResultSet rs = preparedStatement.getGeneratedKeys();
+            rs.next();
+            return generateUserFromResultSet(rs);
 
         } catch (SQLException e) {
             e.printStackTrace();

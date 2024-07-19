@@ -90,10 +90,6 @@ public class AccountService implements Crudable<Account> {
             throw new InvalidInputException("Account is null as it has not been instantiated in memory");
         }
 
-        if(account.getAccountId() <= 0) {
-            throw new InvalidInputException("Account ID needs to be greater than 0.");
-        }
-
         if(account.getOwnerId() <= 0) {
             throw new InvalidInputException("Owner ID needs to be greater than 0.");
         }

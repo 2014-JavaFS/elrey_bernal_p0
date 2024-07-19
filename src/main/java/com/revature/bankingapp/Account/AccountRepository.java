@@ -33,21 +33,25 @@ public class AccountRepository implements Crudable<Account> {
     public Account create(Account newAccount) {
         try(Connection conn = ConnectionFactory.getConnectionFactory().getConnection()) {
 
-            String sql = "insert into accounts (account_id, owner_id, balance, account_type) values (?,?,?, cast(? as account_enum))";
-            PreparedStatement preparedStatement = conn.prepareStatement(sql);
+            String sql = "insert into accounts (owner_id, balance, account_type) values (?,?, cast(? as account_enum))";
+            PreparedStatement preparedStatement = conn.prepareStatement(sql, Statement.RETURN_GENERATED_KEYS);
 
-            preparedStatement.setInt(1, newAccount.getAccountId());
-            preparedStatement.setInt(2, newAccount.getOwnerId());
-            preparedStatement.setDouble(3, newAccount.getBalance());
-            preparedStatement.setObject(4, newAccount.getAccountType().toString());
+            preparedStatement.setInt(1, newAccount.getOwnerId());
+            preparedStatement.setDouble(2, newAccount.getBalance());
+            preparedStatement.setObject(3, newAccount.getAccountType().toString());
 
             int checkInsert = preparedStatement.executeUpdate();
             System.out.println("Inserting information....");
             if(checkInsert == 0) {
                 throw new RuntimeException("User was not inserted into the database");
             }
+            if(checkInsert == 0) {
+                throw new RuntimeException("User was not inserted into the database");
+            }
 
-            return newAccount;
+            ResultSet rs = preparedStatement.getGeneratedKeys();
+            rs.next();
+            return generateAccountFromResultSet(rs);
         } catch (SQLException e) {
             e.printStackTrace();
             return null;

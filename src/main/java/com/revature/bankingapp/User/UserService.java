@@ -57,10 +57,6 @@ public class UserService implements Crudable<User>{
             throw new InvalidInputException("User is null as it has not been instantiated in memory");
         }
 
-        if (user.getUserId() <= 0) {
-            throw new InvalidInputException("User ID needs to be greater than 0.");
-        }
-
         if(!isNotEmpty.test(user.getFirstName()) || !isNotEmpty.test(user.getLastName())) {
             throw new InvalidInputException("Values are empty.");
         }
